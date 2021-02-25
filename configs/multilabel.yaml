@@ -1,0 +1,25 @@
+trainer: generic
+output_dir: $BENCHMARK_RESULTS_PATH/multilabel
+
+data_config:
+    batch_size: 128
+    sample_size: 1
+    img_size: 200
+    num_channels: 1
+    num_labels: 2
+    data_path: /global/cscratch1/sd/vdumont/set_174k_200x200_class2/
+    use_dist_sampler_train: true
+    use_dist_sampler_valid: false
+    from_dict: true
+
+model_config:
+    model_type: resnet
+    num_classes: 2
+    depth: 2
+    learning_rate: 0.01
+    momentum: 0.9
+    optimizer: 'SGD'
+    loss: 'BCE'
+
+train_config:
+    n_epochs: 1

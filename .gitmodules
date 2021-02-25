@@ -1,0 +1,3 @@
+[submodule "matlab"]
+	path = matlab
+	url = https://gitlab.com/ml4science/matlab

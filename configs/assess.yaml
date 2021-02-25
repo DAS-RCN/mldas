@@ -1,0 +1,110 @@
+
+
+# ----------------------------
+#     Model 1
+# ----------------------------
+# num_classes: 2
+# num_channels: 3
+# model_file: /global/scratch/vdumont/all_jobs/multiclass/2-neuron/3-channel/gpu-n8-ds1-bs128-ep50-dp14-lr0.001/checkpoints/model_checkpoint_049.pth.tar
+
+
+# ----------------------------
+#     Model 2
+# ----------------------------
+# num_classes: 2
+# num_channels: 1
+# model_file: /global/scratch/vdumont/all_jobs/multiclass/2-neuron/1-channel/gpu-n4-ds1-bs128-ep40-dp14-lr0.001/checkpoints/model_checkpoint_027.pth.tar
+
+
+# ----------------------------
+#     Model 3
+# ----------------------------
+# num_classes: 2
+# num_channels: 3
+# model_file: /global/scratch/vdumont/all_jobs/multiclass/2-neuron/3-channel/dp8-lr0.01/model39.pt
+
+
+# Original probability map execution
+# ===================================
+# img_size: 200
+# channel_stride: 200
+# sample_stride: 200
+# num_channels: 3
+# num_classes: 2
+# model_file: $SCRATCH/pytorch-ml4das/multiclass/2-neuron/3-channel/gpu-n8-ds1-bs128-ep50-dp14-lr0.001/checkpoints/model_checkpoint_049.pth.tar
+# data_path: /global/cscratch1/sd/vdumont/1min_ch4650_4850/
+# model_type: resnet
+# multilabel: False
+# compact: False
+# depth: 14
+
+# Execution on Lawrencium cluster
+# ===============================
+# img_size: 100
+# channel_stride: 1
+# sample_stride: 10
+# num_channels: 1
+# num_classes: 2
+# model_file: /global/scratch/vdumont/all_jobs/multiclass/2-neuron/1-channel/gpu-n4-ds1-bs128-ep40-dp14-lr0.001/checkpoints/model_checkpoint_027.pth.tar
+# data_path: /clusterfs/bear/ML_trainingDataset/1min_ch4650_4850/westSac_18010300
+# model_type: resnet
+# multilabel: False
+# compact: False
+# depth: 14
+
+# Execution on Lawrencium cluster on ch3000_3500
+# ==============================================
+# img_size: 200
+# channel_stride: 100
+# sample_stride: 200
+# num_channels: 1
+# num_classes: 2
+# model_file: /global/scratch/vdumont/all_jobs/multiclass/2-neuron/1-channel/gpu-n4-ds1-bs128-ep40-dp14-lr0.001/checkpoints/model_checkpoint_027.pth.tar
+# data_path: /clusterfs/bear/ML_trainingDataset/30min_Train_ch3000_3500/Dsi_30min_beforeTrain_*.mat
+# model_type: resnet
+# multilabel: False
+# compact: True
+# depth: 14
+
+# Execution on Cori supercomputer
+# ===============================
+# img_size: 100
+# channel_stride: 1
+# sample_stride: 100
+# num_channels: 1
+# num_classes: 2
+# model_file: $SCRATCH/pytorch-ml4das/multiclass/2-neuron/1-channel/gpu-n4-ds1-bs128-ep40-dp14-lr0.001/checkpoints/model_checkpoint_027.pth.tar
+# data_path: /global/cscratch1/sd/vdumont/1min_ch4650_4850/westSac_18010300
+# model_type: resnet
+# multilabel: False
+# compact: False
+# depth: 14
+
+# Execution on Lawrencium for channels ch1050_1250
+# ================================================
+# img_size: 200
+# channel_stride: 200
+# sample_stride: 200
+# num_channels: 1
+# num_classes: 2
+# model_file: /global/scratch/vdumont/all_jobs/multiclass/2-neuron/1-channel/gpu-n4-ds1-bs128-ep40-dp14-lr0.001/checkpoints/model_checkpoint_027.pth.tar
+# data_path: /clusterfs/bear/ML_trainingDataset/1min_ch1050_1250/westSac_1801030*_ch1050_1250.tdms
+# model_type: resnet
+# multilabel: False
+# compact: True
+# depth: 14
+
+# Execution on Lawrencium cluster
+# ===============================
+img_size: 200
+channel_stride: 200
+sample_stride: 200
+num_channels: 1
+num_classes: 2
+model_file: /global/scratch/vdumont/all_jobs/multiclass/2-neuron/1-channel/gpu-n4-ds1-bs128-ep40-dp14-lr0.001/checkpoints/model_checkpoint_027.pth.tar
+data_path: /clusterfs/bear/ML_trainingDataset/1min_ch4650_4850/westSac_1801040*.mat
+model_type: resnet
+multilabel: False
+compact: True
+depth: 14
+
