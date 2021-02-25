@@ -44,8 +44,8 @@ from matplotlib import cm
 from PIL import Image
 
 # Locals
-from models import resnet
-from explore import lookup
+from mldas.models import resnet
+from mldas.explore import lookup
 
 """
 ./mldas/gather.py -m multilabel -p hsw -s

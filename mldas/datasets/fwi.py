@@ -80,7 +80,7 @@ def extract_data(dataset,input_type,refine,conv2d,norm):
     if norm:
       print(Y[-1][:,0])
       quit()
-      Y[-1][:,0] = (Y[-1][:,0]-Y[-1].min())/(Y[-1].max()-Y[-1].min())
+      Y[-1][:,0] = (Y[-1][:,0]-)/(Y[-1].max()-Y[-1].min())
       Y[-1] = (Y[-1]-Y[-1].min())/(Y[-1].max()-Y[-1].min())
   return X, Y
 

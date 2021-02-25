@@ -1,3 +1,6 @@
 [submodule "matlab"]
 	path = matlab
 	url = https://gitlab.com/ml4science/matlab
+[submodule "docs"]
+	path = docs
+	url = https://gitlab.com/ml4science/mldas-doc

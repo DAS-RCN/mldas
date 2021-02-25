@@ -1,0 +1,14 @@
+pages:
+  script:
+  - mkdir .public
+  - git submodule init
+  - git submodule update
+  - pip install -U sphinx
+  - cd docs && make html
+  - cp -r docs/_build/* .public
+  - mv .public public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
