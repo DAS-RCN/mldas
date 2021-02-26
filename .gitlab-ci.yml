@@ -1,6 +1,13 @@
-pages:
+stages:
+  - pages
+
+myJob:
+  stage: pages
+  image: python:3.6
   script:
   - mkdir .public
+  - apt-get update -q -y
+  - apt-get install -y python-pip  
   - git submodule update --init -- docs
   - pip install -U sphinx
   - cd docs && make html
