@@ -34,8 +34,7 @@ from PIL import Image
 
 # Local
 from .loading import hdf5read, load_model
-sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) )
-from models import get_model
+from ..models import get_model
 
 def extract_prob_map(data,model,img_size=10,channel_stride=1,sample_stride=10,
                      verbose=False,stage_plot=False,single=False,rgb=False,colormap=None):

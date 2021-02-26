@@ -97,6 +97,8 @@ class BaseTrainer(object):
         
         # Loop over epochs
         for i in range(n_epochs):
+            if i+1 in self.lr_decay_epoch:
+                self.optimizer = self.exp_lr_scheduler(self.optimizer)
             self.logger.info('  EPOCH {:>3}/{:<3} | Model initial sumw: {:.5f} |'.format(i+1,n_epochs,sum(p.sum() for p in self.model.parameters())))
             summary = dict(epoch=i)
             # Train on this epoch

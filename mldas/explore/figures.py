@@ -21,6 +21,7 @@ __email__ = "vincentdumont11@gmail.com"
 
 # System
 import os
+import yaml
 
 # Externals
 import numpy
@@ -31,6 +32,8 @@ from matplotlib.colors import LogNorm
 # Local
 from .mapping import extract_prob_map
 from .lookup import find_values
+from ..models import mlp
+from ..datasets import fwi
 
 def rgb_plot(img):
   plt.style.use('seaborn')
@@ -198,4 +201,78 @@ def plot_loss(input_data,log=False,**kwargs):
   ax2.legend()
   plt.tight_layout()
   plt.savefig('plot_loss.png')
+  plt.close()
+
+def plot_fwi_mlp(input_data,config,vmax=3040,ymax=599,**kwargs):
+  # Load yaml file
+  with open(config) as f:
+    config = yaml.load(f, Loader=yaml.FullLoader)
+  # Load validation dataset
+  train_loader, valid_loader, test_loader = fwi.get_data_loaders(config['output_dir'],**config['data_config'])
+  target_data, label_data = next(iter(train_loader))
+  input_size = target_data.reshape(target_data.shape[0],-1).shape[1]
+  output_size = label_data.reshape(label_data.shape[0],-1).shape[1]
+  # Load model and saved parameters
+  model = mlp.MLP([input_size]+config['model_config']['n_layer']+[output_size])
+  checkpoint = torch.load(input_data[0],map_location=lambda storage, loc: storage)
+  model.load_state_dict(checkpoint['model'])
+  model.eval()
+  # Make
+  plt.style.use('seaborn')
+  plt.figure(figsize=(8,16),dpi=200)
+  for targets,labels in train_loader:
+    outs = model(targets.float())
+    for i,(label,out) in enumerate(zip(labels,outs)):
+      if i==5: break
+      if config['data_config']['n_dims']==1:
+        label = label.reshape(-1,2).detach().numpy()
+        out = out.reshape(-1,2).detach().numpy()
+        ax = plt.subplot(3,5,i+1)
+        #ax.step(exp[:,0],exp[:,1],color='blue',lw=1,where='post',zorder=1,ls='dotted')
+        #ax.step(out[:,0],out[:,1],color='red',lw=1,where='post',zorder=2,ls='dotted')
+        ax.scatter(label[:,0]*vmax,label[:,1]*ymax,color='white',edgecolors='blue',lw=1,s=10,label='True',zorder=3)
+        ax.scatter(out[:,0]*vmax,out[:,1]*ymax,color='white',edgecolors='red',lw=5,s=10,label='ML',zorder=4)
+        #if i>4: ax.set_xlabel('V$_\mathrm{S}$ (m/s)')
+        #if i%5==0: ax.set_ylabel('Depth (m)')
+        #if i==0: ax.legend(bbox_to_anchor=(-0.2,1))
+        #ax.xlim(0,vmax)
+        #ax.ylim(0,ymax)
+        ax.invert_yaxis()
+      else:
+        cmap = 'gist_ncar'
+        length = int(numpy.sqrt(label.shape[0]))
+        label = label.reshape(length,length).detach().numpy()
+        out = out.reshape(length,length).detach().numpy()
+        ax = plt.subplot(5,2,i*2+1)
+        ax.imshow(label,extent=[0,1,ymax,0],cmap=cmap,vmin=0,vmax=1,aspect='auto')
+        ax.get_xaxis().set_visible(False)
+        ax = plt.subplot(5,2,i*2+2)
+        ax.imshow(out,extent=[0,1,ymax,0],cmap=cmap,vmin=0,vmax=1,aspect='auto')#,interpolation='bicubic')
+        ax.get_xaxis().set_visible(False)
+    break
+  plt.tight_layout()
+  plt.savefig('learning')
+  plt.close()
+
+def plot_params(input_data,**kwargs):
+  data = numpy.loadtxt(input_data[0])
+  x, y = data[:,2], data[:,1]
+  plt.style.use('seaborn')
+  fig = plt.figure(figsize=(10,10),dpi=200)
+  gs = fig.add_gridspec(2, 2,  width_ratios=(7, 2), height_ratios=(2, 7),
+                        left=0.07, right=0.97, bottom=0.07, top=0.97,
+                        wspace=0.05, hspace=0.05)
+  ax = fig.add_subplot(gs[1, 0])
+  ax.set_xlim(min(x),max(x))
+  ax.set_ylim(min(y),max(y))
+  ax.set_xlabel('Velocity [m/s]')
+  ax.set_ylabel('Maximum Depth [m]')
+  ax_histx = fig.add_subplot(gs[0, 0], sharex=ax)
+  ax_histy = fig.add_subplot(gs[1, 1], sharey=ax)
+  ax_histx.tick_params(axis="x", labelbottom=False)
+  ax_histy.tick_params(axis="y", labelleft=False)
+  ax.scatter(x,y,s=7)
+  ax_histx.hist(x, bins=50)
+  ax_histy.hist(y, bins=50, orientation='horizontal')
+  plt.savefig('params')
   plt.close()

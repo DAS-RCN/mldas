@@ -122,6 +122,12 @@ def main():
     is_distributed = args.distributed_backend is not None
     train_data_loader, valid_data_loader, test_data_loader = get_data_loaders(
         output_dir, is_distributed, **config['data_config'])
+    target_data, label_data = next(iter(train_data_loader))
+    input_size = target_data.reshape(target_data.shape[0],-1).shape[1]
+    output_size = label_data.reshape(label_data.shape[0],-1).shape[1]
+    if 'n_layer' in config['model_config'].keys():
+        config['model_config']['n_layer'] = [input_size]+config['model_config']['n_layer']+[output_size]
+    
     # Load the trainer
     gpu = (rank % args.ranks_per_node) if args.rank_gpu else args.gpu
     if gpu is not None:
@@ -133,7 +139,7 @@ def main():
     trainer.build_model(**config['model_config'])
     if rank == 0:
         trainer.print_model_summary()
-
+        
     # Run the training
     summary = trainer.train(train_data_loader=train_data_loader,
                             valid_data_loader=valid_data_loader,

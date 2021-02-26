@@ -3,13 +3,14 @@ This module defines a generic trainer for simple models and datasets.
 """
 
 # Externals
+import numpy
 import torch
 from torch import nn
 from torch.nn.parallel import DistributedDataParallel
 
 # Locals
 from .base import BaseTrainer
-from models import get_model
+from ..models import get_model
 
 class GenericTrainer(BaseTrainer):
     """Trainer code for basic classification problems."""
@@ -17,11 +18,13 @@ class GenericTrainer(BaseTrainer):
     def __init__(self, **kwargs):
         super(GenericTrainer, self).__init__(**kwargs)
         
-    def build_model(self, model_type='resnet', loss='CE',
-                    optimizer='SGD', learning_rate=0.01,
+    def build_model(self, model_type='resnet', loss='CE', optimizer='SGD',
+                    learning_rate=0.01, lr_decay_epoch=[], lr_decay_ratio=0.5,
                     momentum=0.9, **model_args):
         """Instantiate our model"""
         self.loss = loss
+        self.lr_decay_ratio = lr_decay_ratio
+        self.lr_decay_epoch = lr_decay_epoch
         # Construct the model
         self.model = get_model(name=model_type, **model_args).to(self.device)
         
@@ -37,6 +40,15 @@ class GenericTrainer(BaseTrainer):
                          BCE=torch.nn.BCEWithLogitsLoss,
                          MSE=torch.nn.MSELoss)[loss]
         self.loss_func = loss_type()
+
+
+    def exp_lr_scheduler(self, optimizer):
+        """
+        Decay learning rate by a factor of lr_decay 
+        """
+        for param_group in optimizer.param_groups:
+            param_group['lr'] *= self.lr_decay_ratio
+        return optimizer
         
     def train_epoch(self, data_loader, rounded=False, **kwargs):
         """Train for one epoch"""
@@ -93,9 +105,11 @@ class GenericTrainer(BaseTrainer):
     def accuracy(self, batch_output, batch_target, acc_tol=20):
         # Count number of correct predictions
         if self.loss=='MSE':
-            batch_preds = torch.round(batch_output)
+            #batch_preds = torch.round(batch_output)
+            batch_preds = batch_output
             #n_correct = batch_preds.eq(batch_target).float().mean(dim=1).sum().item()
-            n_correct = batch_preds.sub(batch_target).abs().lt(acc_tol).float().mean(dim=1).sum().item()
+            #n_correct = batch_preds.sub(batch_target).abs().lt(acc_tol).float().mean(dim=1).sum().item()
+            n_correct = batch_target.sub(batch_preds).square().div(batch_preds.square()).sqrt().mul(100).lt(acc_tol).float().mean(dim=1).sum().item()
         elif self.loss=='BCE':
             batch_preds = (torch.sigmoid(batch_output)>0.5).float()
             if batch_preds.dim()==1:

@@ -36,23 +36,34 @@ class make_dataset(Dataset):
   def __len__(self):
     return len(self.dataset)
 
-def refine_model(vmodel,refine):
-  # Add [0,0] reference point in original model
-  vmodel = numpy.vstack(([0,0],vmodel))
-  # Create refined new model
-  new_model = numpy.zeros((refine,2))
-  new_model[:,1] = numpy.linspace(vmodel[0,1],vmodel[-1,1],num=refine)
+def refine_model(vmodel,refine,max_depth,n_dims=1):
+  # Create refined depth array
+  ymax = vmodel[-1,1] if n_dims==1 else max_depth
+  depths = numpy.linspace(0,ymax,num=refine+1)[1:]
+  velocities = []
   # Loop through depth values in refined model
-  for i,depth in enumerate(new_model[:,1]):
+  for i,depth in enumerate(depths):
+    match = False
     # Loop through original model data points
     for j,(v,z) in enumerate(vmodel):
       if z==depth:
-        new_model[i,0] = v
+        velocities.append(v)
+        match = True
+      elif j==0 and 0<depth<=vmodel[j,1]:
+        velocities.append(v)
+        match = True
       elif vmodel[j-1,1]<depth<=vmodel[j,1]:
-        new_model[i,0] = v
-  return new_model
+        velocities.append(v)
+        match = True
+    if match==False and vmodel[-1,1]<depth:
+      velocities.append(v)
+  if n_dims==1:
+    vmodel = numpy.array(numpy.vstack((velocities,depths)).T,dtype=float)
+  else:
+    vmodel = numpy.array(velocities*refine).reshape(refine,refine).T
+  return vmodel
 
-def extract_data(dataset,input_type,refine,conv2d,norm):
+def extract_data(dataset,input_type='field',refine=None,conv2d=None,norm=False,n_dims=1,vmax=3040.,ymax=599.,**kwargs):
   X, Y = [], []
   for fname in dataset:
     data = scipy.io.loadmat(fname)
@@ -63,36 +74,49 @@ def extract_data(dataset,input_type,refine,conv2d,norm):
         X.append(tmp[0,0].detach().numpy())
       else:
         X.append(data['uxt'])
-    else:
+    elif input_type=='spec':
       if conv2d!=None:
         tmp = torch.tensor([[data['fv']]]).float()
         tmp = torch.nn.Conv2d(1,1,1+2*conv2d,conv2d,conv2d)(tmp)
         X.append(tmp[0,0].detach().numpy())
       else:
         X.append(data['fv'])
+    else:
+      print('Input type not recognize (%s). Choose between "field" or "spec". Abort.'%input_type)
+      quit()
     if norm:
       X[-1] = (X[-1]-X[-1].min())/(X[-1].max()-X[-1].min())
-    vmodel = numpy.array([[data['vs'][i,0],sum(data['thk'][:i+1,0])] for i in range(len(data['vs']))])
-    if refine!=None:
-      Y.append(refine_model(vmodel,refine))
+    vmodel = numpy.array([[data['vs'][i,0],sum(data['thk'][:i+1,0])] for i in range(len(data['vs']))],dtype=float)
+    if n_dims==1:
+      if refine==None:
+        Y.append(vmodel)
+      else:
+        Y.append(refine_model(vmodel,refine))
+      if norm:
+        Y[-1][:,0] /= vmax
+        Y[-1][:,1] /= ymax
     else:
-      Y.append(vmodel)
-    if norm:
-      print(Y[-1][:,0])
-      quit()
-      Y[-1][:,0] = (Y[-1][:,0]-)/(Y[-1].max()-Y[-1].min())
-      Y[-1] = (Y[-1]-Y[-1].min())/(Y[-1].max()-Y[-1].min())
+      if refine!=None:
+        Y.append(refine_model(vmodel,refine,max_depth=ymax,n_dims=2))
+      elif input_type=='field':
+        Y.append(refine_model(vmodel,refine=X[-1].shape[0],max_depth=ymax,n_dims=2))
+      else:
+        print('You must specify the "refine" variable for 2D velocity model when using dispersion spectrum. Abort.')
+        quit()
+      if norm:
+        Y[-1] /= ymax
   return X, Y
 
-def get_data_loaders(output_dir,batch_size,data_path,input_type='field',
-                     refine=None,conv2d=None,norm=False,**dataset_args):
+def get_data_loaders(output_dir,batch_size,data_path,**kwargs):
   # List files
-  file_list = glob.glob(data_path+'/*.mat')
+  file_list = sorted(glob.glob(data_path+'/*.mat'))
   assert len(file_list)>0, 'No data found, check the path. Abort.'
-  random.shuffle(file_list)
+  if random:
+    random.shuffle(file_list)
   # Extract data
-  X, Y = extract_data(file_list,input_type,refine,conv2d,norm)
+  X, Y = extract_data(file_list,**kwargs)
   print('Input data of shape',X[-1].shape)
+  print('Output data of shape',Y[-1].shape)
   # Create sets by splitting 20/20/60
   split = math.ceil(0.2*len(file_list))
   X_train, Y_train = X[2*split:], Y[2*split:]
@@ -104,6 +128,6 @@ def get_data_loaders(output_dir,batch_size,data_path,input_type='field',
   valid_dataset = make_dataset(X_valid, Y_valid)
   # Create dataloader
   train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-  test_loader  = DataLoader(test_dataset,  batch_size=batch_size, shuffle=False)
+  test_loader  = DataLoader(test_dataset,  batch_size=batch_size, shuffle=True)
   valid_loader = DataLoader(test_dataset,  batch_size=batch_size, shuffle=False)
   return train_loader, valid_loader, test_loader

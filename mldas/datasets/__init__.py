@@ -22,5 +22,5 @@ __email__ = "vincentdumont11@gmail.com"
 import importlib
 
 def get_data_loaders(output_dir, is_distributed, name, **model_args):
-    module = importlib.import_module('.' + name, 'datasets')
+    module = importlib.import_module('.' + name, 'mldas.datasets')
     return module.get_data_loaders(output_dir, distributed=is_distributed, **model_args)

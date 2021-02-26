@@ -25,5 +25,5 @@ def get_trainer(name, **trainer_args):
     """
     Factory function for retrieving a trainer.
     """
-    module = importlib.import_module('.' + name, 'trainers')
+    module = importlib.import_module('.' + name, 'mldas.trainers')
     return module.get_trainer(**trainer_args)

@@ -4,11 +4,12 @@ output_dir: /Users/vadumont/Desktop
 data_config:
   name: 'fwi'
   batch_size: 8
-  data_path: /Users/vadumont/Desktop/FWI/data
-  input_type: 'field'
+  data_path: /Users/vadumont/Desktop/FWI/data/mat_run0*
+  input_type: 'spec'
   refine: 50
-  conv2d: 2
+  conv2d: 6
   norm: True
+  n_dims: 2
 
 model_config:
   #model_type: resnet
@@ -16,16 +17,16 @@ model_config:
   #num_classes: 12
   model_type: mlp
   n_layer:
-    - 37500
-    - 5000
-    - 1000
-    - 100
-  learning_rate: 0.01
+    - 6000
+    - 4000
+  learning_rate: 0.05
+  lr_decay_epoch: [10, 20]
+  lr_decay_ratio: 0.2
   momentum: 0.9
   optimizer: 'SGD'
   loss: 'MSE'
   
 train_config:
-  n_epochs: 20
-  acc_tol: 0.01
+  n_epochs: 100
+  acc_tol: 10
   rounded: False
