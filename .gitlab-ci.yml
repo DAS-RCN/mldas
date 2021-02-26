@@ -9,7 +9,7 @@ myJob:
   - apt-get update -q -y
   - apt-get install -y python-pip  
   - git submodule update --init -- docs
-  - pip install -U sphinx sphinx-material recommonmark numpydoc
+  - pip install -U sphinx sphinx-material recommonmark numpydoc nbsphinx
   - cd docs && make html
   - cp -r docs/_build/* .public
   - mv .public public
