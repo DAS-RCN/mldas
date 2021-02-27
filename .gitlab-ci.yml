@@ -6,15 +6,15 @@ pages:
   - apt-get install -y python-pip
   - apt-get install -y pandoc
   # Install HDF5
-  - wget https://s3.amazonaws.com/hdf-wordpress-1/wp-content/uploads/manual/HDF5/HDF5_1_10_5/source/hdf5-1.10.5.tar
-  - tar -xvf hdf5-1.10.5.tar
-  - rm -rf hdf5-1.10.5.tar
-  - cd hdf5-1.10.5
-  - ./configure
-  - make install
+  #- wget https://s3.amazonaws.com/hdf-wordpress-1/wp-content/uploads/manual/HDF5/HDF5_1_10_5/source/hdf5-1.10.5.tar
+  #- tar -xvf hdf5-1.10.5.tar
+  #- rm -rf hdf5-1.10.5.tar
+  #- cd hdf5-1.10.5
+  #- ./configure
+  #- make install
   # Install pip packages
   - pip install -U sphinx sphinx-material recommonmark numpydoc nbsphinx sphinx_markdown_tables sphinx_copybutton ipython
-  - pip install -U h5py scipy hdf5 storage matplotlib mpi4py numpy pillow pyyaml scipy torch torchvision
+  - pip install -U h5py scipy storage matplotlib mpi4py numpy pillow pyyaml scipy torch torchvision
   # Export paths
   - export PATH=$PATH:$PWD/bin
   - export PYTHONPATH=$PYTHONPATH:$PWD
