@@ -1,5 +1,5 @@
 trainer: generic
-output_dir: /Users/vadumont/Desktop
+output_dir: /Users/vadumont/Desktop/FWI
 
 data_config:
   name: 'fwi'
