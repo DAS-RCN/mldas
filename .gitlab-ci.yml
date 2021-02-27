@@ -7,8 +7,8 @@ pages:
   - apt-get install -y pandoc
   - git submodule update --init -- docs
   - pip install -U sphinx sphinx-material recommonmark numpydoc nbsphinx sphinx_markdown_tables sphinx_copybutton ipython
-  - export PATH=$PWD/bin
-  - export PYTHONPATH=$PWD/mldas
+  - export PATH=$PATH:$PWD/bin
+  - export PYTHONPATH=$PYTHONPATH:$PWD/mldas
   - cd docs
   - make html
   - cd ../ 
