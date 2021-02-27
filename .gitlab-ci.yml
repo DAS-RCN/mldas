@@ -7,7 +7,8 @@ myJob:
   script:
   - mkdir .public
   - apt-get update -q -y
-  - apt-get install -y python-pip  
+  - apt-get install -y python-pip
+  - apt-get install -y pandoc
   - git submodule update --init -- docs
   - pip install -U sphinx sphinx-material recommonmark numpydoc nbsphinx sphinx_markdown_tables sphinx_copybutton ipython
   - cd docs && make html
