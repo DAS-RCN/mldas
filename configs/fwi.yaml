@@ -19,9 +19,9 @@ model_config:
   n_layer:
     - 6000
     - 4000
-  learning_rate: 0.05
-  lr_decay_epoch: [10, 20]
-  lr_decay_ratio: 0.2
+  #learning_rate: 0.05
+  #lr_decay_epoch: [10, 20]
+  #lr_decay_ratio: 0.2
   momentum: 0.9
   optimizer: 'SGD'
   loss: 'MSE'
