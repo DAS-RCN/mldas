@@ -3,12 +3,11 @@ stages:
 
 myJob:
   stage: pages
-  image: python:3.6
+  image: python:3.7
   script:
   - mkdir .public
   - apt-get update -q -y
   - apt-get install -y python-pip  
-  - apt-get install -y ipython
   - git submodule update --init -- docs
   - pip install -U sphinx sphinx-material recommonmark numpydoc nbsphinx sphinx_markdown_tables sphinx_copybutton
   - cd docs && make html
