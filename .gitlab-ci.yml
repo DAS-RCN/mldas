@@ -1,19 +1,30 @@
 pages:
   image: python:3.7
   script:
-  - mkdir .public
+  # Install apt-get packages
   - apt-get update -q -y
   - apt-get install -y python-pip
   - apt-get install -y pandoc
-  - apt-get install -y --allow-unauthenticated libhdf5-dev
-  - git submodule update --init -- docs
+  # Install HDF5
+  - wget https://s3.amazonaws.com/hdf-wordpress-1/wp-content/uploads/manual/HDF5/HDF5_1_10_5/source/hdf5-1.10.5.tar
+  - tar -xvf hdf5-1.10.5.tar
+  - rm -rf hdf5-1.10.5.tar
+  - cd hdf5-1.10.5
+  - ./configure
+  - make install
+  # Install pip packages
   - pip install -U sphinx sphinx-material recommonmark numpydoc nbsphinx sphinx_markdown_tables sphinx_copybutton ipython
   - pip install -U h5py scipy hdf5 storage matplotlib mpi4py numpy pillow pyyaml scipy torch torchvision
+  # Export paths
   - export PATH=$PATH:$PWD/bin
   - export PYTHONPATH=$PYTHONPATH:$PWD
+  # Build documentation
+  - git submodule update --init -- docs
   - cd docs
   - make html
-  - cd ../ 
+  - cd ../
+  # Move documentation to public folder
+  - mkdir .public
   - cp -r docs/_build/* .public
   - mv .public public
   artifacts:
