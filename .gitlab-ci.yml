@@ -11,7 +11,12 @@ myJob:
   - apt-get install -y pandoc
   - git submodule update --init -- docs
   - pip install -U sphinx sphinx-material recommonmark numpydoc nbsphinx sphinx_markdown_tables sphinx_copybutton ipython
-  - cd docs && make html && cd ../
+  - pwd
+  - cd docs
+  - make html
+  - cd ../ 
+  - pwd
+  - ls -la
   - cp -r docs/_build/* .public
   - mv .public public
   artifacts:
