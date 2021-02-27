@@ -5,7 +5,7 @@ pages:
   - apt-get update -q -y
   - apt-get install -y python-pip
   - apt-get install -y pandoc
-  - apt-get install -y hdf5
+  - apt-get install hdf5-tools
   - git submodule update --init -- docs
   - pip install -U sphinx sphinx-material recommonmark numpydoc nbsphinx sphinx_markdown_tables sphinx_copybutton ipython
   - pip install -U h5py scipy hdf5 storage matplotlib mpi4py numpy pillow pyyaml scipy torch torchvision
