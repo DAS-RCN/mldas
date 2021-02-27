@@ -14,7 +14,7 @@ pages:
   #- make install
   # Install pip packages
   - pip install -U sphinx sphinx-material recommonmark numpydoc nbsphinx sphinx_markdown_tables sphinx_copybutton ipython
-  - pip install -U h5py hdf5storage scipy storage matplotlib numpy pillow pyyaml scipy torch torchvision
+  - pip install -U h5py hdf5storage scipy matplotlib numpy pillow pyyaml scipy torch torchvision
   # Export paths
   - export PATH=$PATH:$PWD/bin
   - export PYTHONPATH=$PYTHONPATH:$PWD
