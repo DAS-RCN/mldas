@@ -2,6 +2,9 @@
 This module defines a generic trainer for simple models and datasets.
 """
 
+# Locals
+import os
+
 # Externals
 import numpy
 import torch
@@ -11,6 +14,7 @@ from torch.nn.parallel import DistributedDataParallel
 # Locals
 from .base import BaseTrainer
 from ..models import get_model
+from ..explore import figures
 
 class GenericTrainer(BaseTrainer):
     """Trainer code for basic classification problems."""
@@ -86,6 +90,7 @@ class GenericTrainer(BaseTrainer):
         sum_loss = 0
         sum_correct = 0
         # Loop over batches
+        n = 0
         for i, (batch_input, batch_target) in enumerate(data_loader):
             batch_input = batch_input.to(self.device)
             if self.loss=='BCE' and batch_target.dim()==1:
@@ -96,6 +101,11 @@ class GenericTrainer(BaseTrainer):
             sum_loss += loss
             n_correct = self.accuracy(batch_output, batch_target, **kwargs)
             sum_correct += n_correct
+            if mode=='Testing':
+                os.makedirs('results',exist_ok=True)
+                for data_input,data_output in zip(batch_target,batch_output):
+                    figures.plot_test_2d(data_input,data_output,'results/%05i'%n)
+                    n+=1
         valid_loss = sum_loss / (i + 1)
         valid_acc = sum_correct / len(data_loader.sampler)
         self.logger.debug('{:>14} | {:6,} samples | Loss {:.5f} | Accuracy {:6.2f}'

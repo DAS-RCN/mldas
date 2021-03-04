@@ -27,6 +27,7 @@ import yaml
 import numpy
 import torch
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 from matplotlib.colors import LogNorm
 
 # Local
@@ -254,9 +255,51 @@ def plot_fwi_mlp(input_data,config,vmax=3040,ymax=599,**kwargs):
   plt.savefig('learning')
   plt.close()
 
-def plot_params(input_data,**kwargs):
+def plot_test_2d(input_data,output_data,fname='learning',vmax=3040,ymax=599):
+  cmap = 'gist_ncar'
+  length = int(numpy.sqrt(input_data.shape[0]))
+  plt.style.use('seaborn')
+  plt.figure(figsize=(8,4),dpi=200)
+  for i,data in enumerate([input_data,output_data]):
+    ax = plt.axes([0.1 if i==0 else 0.5, 0.1, 0.39, 0.8])
+    data = data.reshape(length,length).detach().numpy()
+    im = ax.imshow(data,extent=[0,1,ymax,0],cmap=cmap,vmin=0,vmax=1,aspect='auto')
+    ax.get_xaxis().set_ticks([])
+    ax.set_xlabel('Receiver location')
+    if i==0:
+      ax.set_ylabel('Depth (m)')
+    else:
+      ax.yaxis.set_ticklabels([])
+  cax = plt.axes([0.9, 0.1, 0.02, 0.8])
+  cbar = plt.colorbar(im,cax=cax).set_label('Velocity (m/s)')
+  #for t, y in zip( cbar.get_ticklabels( ), cbar.get_ticks( ) ):
+  #  t.set_y( y*vmax )
+  #plt.tight_layout()
+  plt.savefig(fname)
+  plt.close()
+
+def plot_params(input_data,region,**kwargs):
+  """
+  Example
+  -------
+  >>> das_quickrun.py plot_params -i ML-mkshots-fcheng/info.txt
+  >>> das_quickrun.py plot_params -i ML-mkshots-fcheng/info.txt -r 0.5
+  """
   data = numpy.loadtxt(input_data[0])
+  new_data = numpy.empty((0,3))
   x, y = data[:,2], data[:,1]
+  print('Mean and Standard Deviation:')
+  print('Velocity ..',numpy.mean(x),numpy.std(x))
+  print('Depth .....',numpy.mean(y),numpy.std(y))
+  #for y, x in data[:,1:]:
+  #  match = False
+  #  for i in range(len(new_data)):
+  #    if x==new_data[i,0] and y==new_data[i,1]:
+  #      new_data[i,2]+=1
+  #      match = True
+  #  if match==False:
+  #    new_data = numpy.vstack((new_data,[x,y,1]))
+  #x,y,c = new_data[:,0], new_data[:,1], new_data[:,2]
   plt.style.use('seaborn')
   fig = plt.figure(figsize=(10,10),dpi=200)
   gs = fig.add_gridspec(2, 2,  width_ratios=(7, 2), height_ratios=(2, 7),
@@ -265,13 +308,26 @@ def plot_params(input_data,**kwargs):
   ax = fig.add_subplot(gs[1, 0])
   ax.set_xlim(min(x),max(x))
   ax.set_ylim(min(y),max(y))
-  ax.set_xlabel('Velocity [m/s]')
+  ax.set_xlabel('Maximum Velocity [m/s]')
   ax.set_ylabel('Maximum Depth [m]')
   ax_histx = fig.add_subplot(gs[0, 0], sharex=ax)
   ax_histy = fig.add_subplot(gs[1, 1], sharey=ax)
   ax_histx.tick_params(axis="x", labelbottom=False)
   ax_histy.tick_params(axis="y", labelleft=False)
-  ax.scatter(x,y,s=7)
+  #ax.scatter(x,y,c=c,s=7,cmap="magma")
+  ax.scatter(x,y,s=5)
+  if region!=None:
+    rect = patches.Rectangle((numpy.mean(x)-region*numpy.std(x),
+                              numpy.mean(y)-region*numpy.std(y)),
+                             2*region*numpy.std(x),
+                             2*region*numpy.std(y), linewidth=5, edgecolor='r', facecolor='none')
+    ax.add_patch(rect)
+    n=0
+    for v,z in zip(x,y):
+      if numpy.mean(x)-region*numpy.std(x)<v<numpy.mean(x)+region*numpy.std(x) and \
+         numpy.mean(y)-region*numpy.std(y)<z<numpy.mean(y)+region*numpy.std(y):
+        n+=1
+    print(n,'models found within range.')
   ax_histx.hist(x, bins=50)
   ax_histy.hist(y, bins=50, orientation='horizontal')
   plt.savefig('params')
