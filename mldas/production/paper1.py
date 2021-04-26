@@ -124,3 +124,20 @@ def plot_freq_content(data,img_size=200,sample_rate=500):
   plt.tight_layout(h_pad=0,w_pad=0)
   plt.savefig('signal_types.pdf')
   plt.show()
+
+def latent_plot(models):
+  fig, ax = plt.subplots(3,2,figsize=(10,12),sharex=True,sharey=True)
+  for n,(i,j) in enumerate([[0,0],[0,1],[1,0],[1,1],[2,0],[2,1]]):
+    model_epoch = models[n]
+    model_epoch.eval()
+    for batch_idx, (data,target) in enumerate(train_loader):
+      data = data.float()
+      z, recon_batch, mu, logvar = model_epoch(data.view(-1,numpy.prod(data.shape[-2:])))
+      z = z.data.cpu().numpy()
+      ax[i][j].scatter(z[:,0],z[:,1],s=10,c=target,cmap='cool',alpha=0.5)
+      ax[i][j].set_title('Epoch %i'%(n+1),fontsize=15)
+      if i==2: ax[i][j].set_xlabel('Latent variable 1')
+      if j==0: ax[i][j].set_ylabel('Latent variable 2')
+  plt.tight_layout()
+  plt.savefig('clustering.pdf')
+  plt.show()
