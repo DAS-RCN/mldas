@@ -69,4 +69,4 @@ def create_set(path,dir_path='/content',imax=174000):
     for i,fname in enumerate(dataset):
       set_name = 'train' if i<0.70*imax else 'test' if 0.85*imax<=i else 'validation'
       os.system('mkdir -p %s/%s/%s'%(dir_path,set_name,label))
-      os.system('mv %s %s/%s/%s/'%(dir_path,fname,set_name,label))
+      os.system('mv %s %s/%s/%s/'%(fname,dir_path,set_name,label))
