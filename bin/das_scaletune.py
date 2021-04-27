@@ -39,7 +39,7 @@ from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 # Local
 from mldas.explore import lookup
 from mldas.explore import colormap as custom
-from mldas.gather import load_data, get_model, get_prob
+from das_gather import load_data, get_model, get_prob
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -129,8 +129,7 @@ def load_record(target):
     depth_lr = numpy.array([(int(job.split('-')[-2][2:]),float(job.split('-')[-1][2:])) for job in jobs],
                            dtype=numpy.dtype([('depth', int), ('lr', float)]))
     jobs = jobs[numpy.argsort(depth_lr, order=('depth', 'lr'))]
-    print(jobs)
-    #print(jobs)
+    # print(jobs)
     njobs = len(jobs)
     # Remove job name column and extract maximum number of epochs
     record = numpy.empty(all_record.shape[1]-1,dtype=float)
@@ -146,8 +145,8 @@ def load_record(target):
     idxs = numpy.where((record[:,1]<0.1) & (record[:,2]>0.9) &
                        (0.7<record[:,3]) & (record[:,3]<0.9) &
                        (0.2<record[:,4]) & (record[:,4]<0.3))
-    print(record[idxs])
-    print(job_names[idxs])
+    # print(record[idxs])
+    # print(job_names[idxs])
     # Initialize probability arrays with NaN values
     data = numpy.empty((4,njobs,epochs))
     data[:] = numpy.nan
