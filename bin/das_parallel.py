@@ -39,8 +39,8 @@ from matplotlib.ticker import MaxNLocator
 from scipy.interpolate import interp1d
 
 # Local
-from explore import colormap as custom
-from explore import lookup
+from mldas.explore import colormap as custom
+from mldas.explore import lookup
 
 def parse_args():
     parser = argparse.ArgumentParser()
