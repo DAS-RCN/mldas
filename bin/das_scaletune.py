@@ -37,9 +37,9 @@ from matplotlib.patches import Rectangle
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 
 # Local
-from explore import lookup
-from explore import colormap as custom
-from gather import load_data, get_model, get_prob
+from mldas.explore import lookup
+from mldas.explore import colormap as custom
+from mldas.gather import load_data, get_model, get_prob
 
 def parse_args():
     parser = argparse.ArgumentParser()
