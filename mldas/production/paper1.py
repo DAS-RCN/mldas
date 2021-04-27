@@ -125,12 +125,12 @@ def plot_freq_content(data,img_size=200,sample_rate=500):
   plt.savefig('signal_types.pdf')
   plt.show()
 
-def latent_plot(models):
+def latent_plot(models,loader):
   fig, ax = plt.subplots(3,2,figsize=(10,12),sharex=True,sharey=True)
   for n,(i,j) in enumerate([[0,0],[0,1],[1,0],[1,1],[2,0],[2,1]]):
     model_epoch = models[n]
     model_epoch.eval()
-    for batch_idx, (data,target) in enumerate(train_loader):
+    for batch_idx, (data,target) in enumerate(loader):
       data = data.float()
       z, recon_batch, mu, logvar = model_epoch(data.view(-1,numpy.prod(data.shape[-2:])))
       z = z.data.cpu().numpy()
