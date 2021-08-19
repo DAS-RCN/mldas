@@ -1,30 +1,37 @@
+Machine Learning for Distributed Acoustic Sensing (MLDAS)
+=========================================================
+
+.. contents::
+
+Documentation
+-------------
+
+- `master <ttps://ml4science.gitlab.io/mldas>`_
+
+Why MLDAS?
+----------
+
 MLDAS is a Python package providing tools for studying Distributed Acoustis Sensing (DAS) data and train machine learning algorithms on them. The documentation can be accessed via the following link:
 
-<https://ml4science.gitlab.io/mldas>
+Installation
+------------
 
-# Installation
+To install, you can use the Python package manager ``pip`` as follows::
 
-To install, you can use the Python package manager ``pip`` as follows:
+	sudo pip install mldas
 
-```
-sudo pip install mldas
-```
+Once installed on your system, the package can be loaded into any Python script as follows::
 
-Once installed on your system, the package can be loaded into any Python script as follows:
+	from mldas import *
+	python mldas/train.py configs/multilabel.yaml -v --depth 2 --lr 0.1 --epochs  2 --sample-size 1 --batch-size 128 --output-dir output_test
 
-```
-from mldas import *
-```
-
-```
-python mldas/train.py configs/multilabel.yaml -v --depth 2 --lr 0.1 --epochs  2 --sample-size 1 --batch-size 128 --output-dir output_test
-```
-
-# Modified BSD License Agreement
+Modified BSD License Agreement
+------------------------------
 
 MLDAS is released under a modified BSD license. A full description of the license agreement can be found in the [LICENSE.txt](https://gitlab.com/ml4science/mldas/-/blob/master/LICENSE.txt) file.
 
-# About
+About
+-----
 
 Machine Learning for Distributed Acoustic Sensing data (MLDAS)
 Copyright (c) 2020, The Regents of the University of California,
