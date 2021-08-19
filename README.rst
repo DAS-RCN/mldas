@@ -6,7 +6,7 @@ Machine Learning for Distributed Acoustic Sensing (MLDAS)
 Documentation
 -------------
 
-- `master <ttps://ml4science.gitlab.io/mldas>`_
+- `master <https://ml4science.gitlab.io/mldas>`_
 
 Why MLDAS?
 ----------
